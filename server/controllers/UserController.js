@@ -10,18 +10,19 @@ const generateToken = (id, email, role) => {
 class UserController {
     async registration(req, res, next) {
         const {email, password, role} = req.body
+        console.log(email, password, role)
         if (!email || !password) {
-            return next(ApiError.babRequest("неккоректный email или password"))
+            return next(ApiError.badRequest("неккоректный email или password"))
         }
-        const candidate = User.findOne({where: {email}})
+        const candidate = await User.findOne({where: {email}})
         if (candidate) {
-            return next(ApiError.babRequest("пользавотель с таким email уже существует"))
+            return next(ApiError.badRequest("пользавотель с таким email уже существует"))
         }
-        const hashPassword = bcrypt.hash(password, 4)
+        const hashPassword = await bcrypt.hash(password, 4)
         const user = await User.create({
             email, role, password: hashPassword
         })
-        const cart = Cart.create({userId: user.id})
+        const cart = await Cart.create({userId: user.id})
         const token = generateToken(user.id, email, role)
         return res.json({token})
     }
@@ -35,10 +36,10 @@ class UserController {
                 const token = generateToken(user.id, email, user.role)
                 return res.json({token})
             } else {
-                return next(ApiError.babRequest("неверный login или password"))
+                return next(ApiError.badRequest("неверный login или password"))
             }
         } else {
-            return next(ApiError.babRequest("неверный login или password"))
+            return next(ApiError.badRequest("неверный login или password"))
         }
     }
 

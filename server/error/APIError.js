@@ -4,7 +4,7 @@ class APIError extends Error{
         this.status = status
         this.message = message
     }
-    static babRequest(message){
+    static badRequest(message){
         return new APIError(404, message)
     }
     static internal(message){
