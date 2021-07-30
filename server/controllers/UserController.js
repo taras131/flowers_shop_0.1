@@ -29,9 +29,9 @@ class UserController {
 
     async login(req, res, next) {
         const {email, password} = req.body
-        const user = User.findOne({where:{email}})
+        const user = await User.findOne({where:{email}})
         if(user){
-            let comparePassword = bcrypt.compareSync(password, user.password)
+            let comparePassword = await bcrypt.compareSync(password, user.password)
             if(comparePassword) {
                 const token = generateToken(user.id, email, user.role)
                 return res.json({token})
@@ -44,7 +44,7 @@ class UserController {
     }
 
     async check(req, res, next) {
-        const token =generateToken(req.user.id, req.user.email, req.user.role)
+        const token = generateToken(req.user.id, req.user.email, req.user.role)
         return res.json({token})
     }
 }

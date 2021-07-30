@@ -8,9 +8,10 @@ class ProductController {
         try {
             let {name, price, brandId, typeId, info} = req.body
             const {img} = req.files
-            let fileName = uuid.v4() + ".jpeg"
-            img.mv(path.resolve(__dirname, '..', 'static', fileName))
+            let fileName = uuid.v4() + ".jpg"
+            await img.mv(path.resolve(__dirname, '..', 'static', fileName))
             const product = await Product.create({name, price, brandId, typeId, img: fileName})
+            console.log('id: '+product.id)
             if (info) {
                 info = JSON.parse(info)
                 info.forEach(item => {
@@ -23,7 +24,7 @@ class ProductController {
             }
             return res.json(product)
         } catch (e) {
-            next(ApiError.babRequest(e.message))
+            next(ApiError.badRequest(e.message))
         }
 
     }
@@ -46,6 +47,7 @@ class ProductController {
         if (brandId && typeId) {
             products = await Product.findAndCountAll({where: {brandId, typeId}, limit, offset})
         }
+        console.log(products)
         return res.json(products)
     }
 
